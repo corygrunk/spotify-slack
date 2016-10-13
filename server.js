@@ -4,6 +4,7 @@ const BeepBoopConvoStore = require('slapp-convo-beepboop')
 const BeepBoopContext = require('slapp-context-beepboop')
 const request = require('request')
 const spotify = require('spotify-node-applescript')
+const getColors = require('get-image-colors')
 if (!process.env.PORT) throw Error('PORT missing but required')
 
 var slapp = Slapp({
@@ -19,15 +20,19 @@ slapp.command('/spotify', '(.*)', (msg, text, question) => {
     bodyJson = JSON.parse(body)
     if (!error && response.statusCode == 200 && bodyJson.tracks.items.length) {
       var track = bodyJson.tracks.items[0]
-      var trackartist = ':musical_note: *' + track.name + '* by *' + track.artists[0].name + '*'
-      msg.say({
-        text: 'Playing:',
-        attachments: [
-          {
-            title: trackartist,
-            image_url: track.album.images[1].url,
-            color: '#3AA3E3'
-          }]
+      var trackArtist = ':musical_note: *' + track.name + '* by *' + track.artists[0].name + '*'
+      var trackColor = '#000000'
+      getColors(track.album.images[2].url, function(err, colors){
+        trackColor = colors.map(color => color.hex())[0]
+        msg.say({
+          text: 'Playing:',
+          attachments: [
+            {
+              title: trackArtist,
+              image_url: track.album.images[1].url,
+              color: trackColor
+            }]
+        })
       })
       spotify.playTrack(track.uri, function(){
         // track is playing
