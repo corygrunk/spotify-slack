@@ -21,9 +21,8 @@ slapp.command('/spotify', '(.*)', (msg, text, question) => {
     if (!error && response.statusCode == 200 && bodyJson.tracks.items.length) {
       var track = bodyJson.tracks.items[0]
       var trackArtist = ':musical_note: *' + track.name + '* by *' + track.artists[0].name + '*'
-      var trackColor = '#000000'
       getColors(track.album.images[2].url, function(err, colors){
-        trackColor = colors.map(color => color.hex())[0]
+        var trackColor = colors.map(color => color.hex())[0]
         msg.say({
           text: 'Playing:',
           attachments: [
